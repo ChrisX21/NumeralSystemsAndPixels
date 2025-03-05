@@ -57,12 +57,24 @@
 
         public Color GetPixel(int row, int col)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int pixelIndex = col * 3;
+            byte red = this.pixels[row][pixelIndex];
+            byte green = this.pixels[row][pixelIndex + 1];
+            byte blue = this.pixels[row][pixelIndex + 2];
+
+            return Color.FromArgb(red, green, blue);
         }
 
         public void SetPixel(int row, int col, Color color)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int pixelIndex = col * 3;
+            this.pixels[row][pixelIndex] = color.R;
+            this.pixels[row][pixelIndex + 1] = color.G;
+            this.pixels[row][pixelIndex + 2] = color.B;
         }
 
         public void DrawHorizontalLine(int row, int startCol, int endCol, Color color)
@@ -81,10 +93,31 @@
             }
         }
 
-        public void DrawDiagonalLine(int startCol, int startRow, int endCol,
-            int endRow, Color color)
+        public void DrawDiagonalLine(int startCol, int startRow, int endCol, int endRow, Color color)
         {
-            throw new NotImplementedException();
+            int dx = Math.Abs(endCol - startCol);
+            int dy = Math.Abs(endRow - startRow);
+            int sx = (startCol < endCol) ? 1 : -1;
+            int sy = (startRow < endRow) ? 1 : -1;
+            int err = dx - dy;
+
+            while (true)
+            {
+                SetPixel(startRow, startCol, color);
+                if (startCol == endCol && startRow == endRow) break;
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    startCol += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    startRow += sy;
+                }
+            }
         }
 
         public void DrawRectangle(int startRow, int startCol, int endRow, int endCol, Color color)
