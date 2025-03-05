@@ -88,23 +88,63 @@
             }
         }
 
-        public void DrawHorizontalLine(int row, int startCol, int endCol,
-            CanvasColor color)
+        public void DrawHorizontalLine(int row, int startCol, int endCol, CanvasColor color)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, startCol);
+            CheckBounds(row, endCol);
+
+            if (startCol > endCol)
+            {
+                throw new ArgumentException("startCol should be less than or equal to endCol");
+            }
+
+            for (int col = startCol; col <= endCol; col++)
+            {
+                SetPixel(row, col, color);
+            }
         }
 
-        public void DrawVerticalLine(int col, int startRow, int endRow,
-            CanvasColor color)
+
+        public void DrawVerticalLine(int col, int startRow, int endRow, CanvasColor color)
         {
-            throw new NotImplementedException();
+            CheckBounds(startRow, col);
+            CheckBounds(endRow, col);
+
+            if (startRow > endRow)
+            {
+                throw new ArgumentException("startRow should be less than or equal to endRow.");
+            }
+
+            for (int row = startRow; row <= endRow; row++)
+            {
+                SetPixel(row, col, color);
+            }
         }
 
-        public void DrawRectangle(int startRow, int startCol, int endRow, int endCol,
-            CanvasColor color)
+
+        public void DrawRectangle(int startRow, int startCol, int endRow, int endCol, CanvasColor color)
         {
-            throw new NotImplementedException();
+            CheckBounds(startRow, startCol);
+            CheckBounds(endRow, endCol);
+
+            if (startRow > endRow)
+            {
+                throw new ArgumentException("startRow should be less than or equal to endRow.");
+            }
+
+            if (startCol > endCol)
+            {
+                throw new ArgumentException("startCol should be less than or equal to endCol.");
+            }
+
+            DrawHorizontalLine(startRow, startCol, endCol, color);
+            DrawHorizontalLine(endRow, startCol, endCol, color);
+            DrawVerticalLine(startCol, startRow, endRow, color);
+            DrawVerticalLine(endCol, startRow, endRow, color);
+
         }
+
+
 
         private void CheckBounds(int height, int width)
         {
