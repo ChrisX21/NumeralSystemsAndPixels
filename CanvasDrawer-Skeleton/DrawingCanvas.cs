@@ -25,7 +25,7 @@
             }
 
             // Uncomment when implemented
-            //this.FillAllPixels(CanvasColor.White);
+            this.FillAllPixels(CanvasColor.White);
         }
 
         public int Width => this.pixels[0].Length * 32;
@@ -38,37 +38,69 @@
 
         public void FillAllPixels(CanvasColor color)
         {
-            throw new NotImplementedException();
+            uint mask = (color == CanvasColor.Black) ? 0 : uint.MaxValue;
+            for (int row = 0; row < this.RowCount; row++)
+            {
+                for (int col = 0; col < this.ColCount; col++)
+                {
+                    this.pixels[row][col] = mask;
+                }
+            }
         }
 
         public void InvertAllPixels()
         {
-            throw new NotImplementedException();
+            for (int row = 0; row < this.RowCount; row++)
+            {
+                for (int col = 0; col < this.ColCount; col++)
+                {
+                    this.pixels[row][col] = ~this.pixels[row][col];
+                }
+            }
         }
 
         public CanvasColor GetPixel(int row, int col)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int bitIndex = col % 32;
+            int intIndex = col / 32;
+            uint bitValue = (this.pixels[row][intIndex] >> bitIndex) & 1;
+
+            return (bitValue == 1) ? CanvasColor.White : CanvasColor.Black;
         }
 
         public void SetPixel(int row, int col, CanvasColor color)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int bitIndex = col % 32;
+            int intIndex = col / 32;
+            uint mask = (uint)(1 << bitIndex);
+
+            if (color == CanvasColor.White)
+            {
+                this.pixels[row][intIndex] |= mask;
+            }
+            else
+            {
+                this.pixels[row][intIndex] &= ~mask;
+            }
         }
 
-        public void DrawHorizontalLine(int row, int startCol, int endCol, 
+        public void DrawHorizontalLine(int row, int startCol, int endCol,
             CanvasColor color)
         {
             throw new NotImplementedException();
         }
 
-        public void DrawVerticalLine(int col, int startRow, int endRow, 
+        public void DrawVerticalLine(int col, int startRow, int endRow,
             CanvasColor color)
         {
             throw new NotImplementedException();
         }
 
-        public void DrawRectangle(int startRow, int startCol, int endRow, int endCol, 
+        public void DrawRectangle(int startRow, int startCol, int endRow, int endCol,
             CanvasColor color)
         {
             throw new NotImplementedException();
