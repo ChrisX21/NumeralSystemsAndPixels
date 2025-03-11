@@ -57,12 +57,24 @@
 
         public Color GetPixel(int row, int col)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int pixelIndex = col * 3;
+            byte red = this.pixels[row][pixelIndex];
+            byte green = this.pixels[row][pixelIndex + 1];
+            byte blue = this.pixels[row][pixelIndex + 2];
+
+            return Color.FromArgb(red, green, blue);
         }
 
         public void SetPixel(int row, int col, Color color)
         {
-            throw new NotImplementedException();
+            CheckBounds(row, col);
+
+            int pixelIndex = col * 3;
+            this.pixels[row][pixelIndex] = color.R;
+            this.pixels[row][pixelIndex + 1] = color.G;
+            this.pixels[row][pixelIndex + 2] = color.B;
         }
 
         public void DrawHorizontalLine(int row, int startCol, int endCol, Color color)
@@ -81,11 +93,35 @@
             }
         }
 
-        public void DrawDiagonalLine(int startCol, int startRow, int endCol,
-            int endRow, Color color)
+        public void DrawDiagonalLine(int startCol, int startRow, int endCol, int endRow, Color color)
         {
-            throw new NotImplementedException();
+            int dx = Math.Abs(endCol - startCol);
+            int dy = Math.Abs(endRow - startRow);
+
+            if (dy <= dx)
+            {
+                if (startCol > endCol)
+                {
+                    PlotLineLow(endCol, endRow, startCol, startRow, color);
+                }
+                else
+                {
+                    PlotLineLow(startCol, startRow, endCol, endRow, color);
+                }
+            }
+            else
+            {
+                if (startRow > endRow)
+                {
+                    PlotLineHigh(endCol, endRow, startCol, startRow, color);
+                }
+                else
+                {
+                    PlotLineHigh(startCol, startRow, endCol, endRow, color);
+                }
+            }
         }
+
 
         public void DrawRectangle(int startRow, int startCol, int endRow, int endCol, Color color)
         {
@@ -95,23 +131,74 @@
             this.DrawVerticalLine(endCol, startRow, endRow, color);
         }
 
-        public void DrawTriangle(int startRow, int startCol, int endRow, 
-            int endCol, Color color)
+        public void DrawTriangle(int startRow, int startCol, int endRow, int endCol, Color color)
         {
-            throw new NotImplementedException();
+            int midRow = (startRow + endRow) / 2;
+            int midCol = (startCol + endCol) / 2;
+
+            DrawDiagonalLine(startCol, startRow, midCol, endRow, color);
+            DrawDiagonalLine(midCol, endRow, endCol, startRow, color);
+            DrawDiagonalLine(endCol, startRow, startCol, startRow, color);
         }
 
-        private void PlotLineLow(int startCol, int startRow, int endCol, 
-            int endRow, Color color)
+
+
+        private void PlotLineLow(int startCol, int startRow, int endCol, int endRow, Color color)
         {
-            throw new NotImplementedException();
+            int dx = endCol - startCol;
+            int dy = endRow - startRow;
+            int yi = 1;
+
+            if (dy < 0)
+            {
+                yi = -1;
+                dy = -dy;
+            }
+
+            int D = 2 * dy - dx;
+            int y = startRow;
+
+            for (int x = startCol; x <= endCol; x++)
+            {
+                SetPixel(y, x, color);
+                if (D > 0)
+                {
+                    y += yi;
+                    D -= 2 * dx;
+                }
+                D += 2 * dy;
+            }
         }
 
-        private void PlotLineHigh(int startCol, int startRow, int endCol, 
-            int endRow, Color color)
+
+        private void PlotLineHigh(int startCol, int startRow, int endCol, int endRow, Color color)
         {
-            throw new NotImplementedException();
+            int dx = endCol - startCol;
+            int dy = endRow - startRow;
+            int xi = 1;
+
+            if (dx < 0)
+            {
+                xi = -1;
+                dx = -dx;
+            }
+
+            int D = 2 * dx - dy;
+            int x = startCol;
+
+            for (int y = startRow; y <= endRow; y++)
+            {
+                SetPixel(y, x, color);
+                if (D > 0)
+                {
+                    x += xi;
+                    D -= 2 * dy;
+                }
+                D += 2 * dx;
+            }
         }
+
+
 
         private void CheckBounds(int height, int width)
         {
